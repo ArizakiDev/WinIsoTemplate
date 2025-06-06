@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signalements - Windows ISO Uploader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://img.icons8.com/color/48/000000/windows-10.png" alt="Windows Icon">
+                <h5 class="text-light">Windows ISO Uploader</h5>
+                <p class="small mb-0 text-muted">Administration</p>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/dashboard">
+                        <i class="bi bi-speedometer2"></i> <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/admin/reports">
+                        <i class="bi bi-flag-fill"></i> <span>Signalements</span>
+                        <% if (reportCount > 0) { %>
+                            <span class="badge bg-danger float-end"><%= reportCount %></span>
+                        <% } %>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/isos">
+                        <i class="bi bi-hdd-fill"></i> <span>Tous les ISO</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-5">
+                    <a class="nav-link" href="/admin/logout">
+                        <i class="bi bi-box-arrow-right"></i> <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-light">Signalements</h2>
+                <span class="text-muted">Connecté en tant que <%= admin %></span>
+            </div>
+            
+            <% if (typeof messages !== 'undefined' && messages.success) { %>
+                <div class="alert alert-success">
+                    <%= messages.success %>
+                </div>
+            <% } %>
+            
+            <% if (reports.length === 0) { %>
+                <div class="alert alert-info">
+                    Aucun signalement pour le moment. Tout va bien !
+                </div>
+            <% } else { %>
+                <% reports.forEach(iso => { %>
+                    <div class="report-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="text-light">
+                                    <%= iso.originalName %>
+                                    <span class="badge report-badge">Signalé</span>
+                                </h5>
+                                <div class="mb-3">
+                                    <h6 class="text-light">Raison du signalement :</h6>
+                                    <p><%= iso.reportReason %></p>
+                                </div>
+                                <p class="mb-2"><%= iso.description %></p>
+                                <small class="text-muted">
+                                    Partagé par <strong><%= iso.username %></strong> 
+                                    le <%= new Date(iso.uploadDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %> 
+                                    | <%= (iso.fileSize / (1024 * 1024)).toFixed(2) %> MB
+                                </small>
+                            </div>
+                            <div>
+                                <a href="/iso/<%= iso._id %>" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                                <div class="btn-group mt-2">
+                                    <form action="/admin/delete/<%= iso._id %>" method="POST" class="me-2">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet ISO ?')">
+                                            <i class="bi bi-trash"></i> Supprimer
+                                        </button>
+                                    </form>
+                                    <form action="/admin/dismiss-report/<%= iso._id %>" method="POST">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-check-lg"></i> Ignorer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

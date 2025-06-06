@@ -1,0 +1,135 @@
+<%- contentFor('body') %>
+
+<% if (messages && messages.error) { %>
+<div class="notification-bar danger">
+    <%= messages.error %>
+</div>
+<% } %>
+
+<% if (messages && messages.success) { %>
+<div class="notification-bar success">
+    <%= messages.success %>
+</div>
+<% } %>
+
+<div class="jumbotron text-center mb-5">
+    <h1 class="display-4 mb-3">Windows ISO Uploader</h1>
+    <p class="lead fw-light mb-4">Partagez vos ISO Windows personnalisés avec la communauté</p>
+    <a href="/upload" class="btn btn-upload btn-lg mt-2">
+        <i class="bi bi-cloud-upload me-2"></i> UPLOADER UN ISO
+    </a>
+</div>
+
+<h2 class="mb-4 border-start border-primary ps-3 py-2">ISO Windows disponibles</h2>
+
+<% if (isos.length === 0) { %>
+    <div class="alert alert-info">
+        Aucun ISO n'a encore été téléchargé. Soyez le premier à contribuer !
+    </div>
+<% } else { %>
+    <div class="row">
+        <% isos.forEach(iso => { %>
+            <div class="col-md-6 mb-4">
+                <div class="card iso-card h-100 <%= iso.isExternalLink ? 'external-link-card' : '' %>">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">
+                            <%= iso.originalName %>
+                            <% if (iso.isExternalLink) { %>
+                                <span class="badge bg-info ms-2">Lien externe</span>
+                            <% } %>
+                        </h5>
+                        <p class="card-text"><%= iso.description %></p>
+                        <div class="mb-3">
+                            <small class="text-light opacity-75">
+                                Partagé par <strong><%= iso.username %></strong> 
+                                le <%= new Date(iso.uploadDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <% if (!iso.isExternalLink) { %>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-hdd-fill me-1"></i> <%= (iso.fileSize / (1024 * 1024)).toFixed(2) %> MB
+                                </span>
+                            <% } else { %>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-link-45deg"></i> Lien externe
+                                </span>
+                            <% } %>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/download/<%= iso._id %>" class="btn btn-primary">
+                                <% if (iso.isExternalLink) { %>
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> Visiter
+                                <% } else { %>
+                                    <i class="bi bi-download me-1"></i> Télécharger
+                                <% } %>
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal<%= iso._id %>">
+                                    <i class="bi bi-flag-fill me-1"></i> Signaler
+                                </button>
+                                <a href="/iso/<%= iso._id %>" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-info-circle me-1"></i> Détails
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal pour signaler -->
+            <div class="modal fade" id="reportModal<%= iso._id %>" tabindex="-1" aria-labelledby="reportModalLabel<%= iso._id %>" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reportModalLabel<%= iso._id %>">
+                                <i class="bi bi-flag-fill me-2 text-danger"></i> Signaler cet ISO
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="/report/<%= iso._id %>" method="POST">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label fw-bold">Votre nom d'utilisateur</label>
+                                    <input type="text" class="form-control username-input" id="username" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reason" class="form-label fw-bold">Raison du signalement</label>
+                                    <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-flag-fill me-1"></i> Signaler
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+<% } %>
+
+<!-- Sélecteur de langue -->
+<div class="language-selector">
+    <i class="bi bi-translate"></i>
+    <div class="language-dropdown">
+        <a href="#" class="language-option active" data-lang="fr">
+            <img src="https://flagcdn.com/w20/fr.png" alt="Français"> Français
+        </a>
+        <a href="#" class="language-option" data-lang="en">
+            <img src="https://flagcdn.com/w20/gb.png" alt="English"> English
+        </a>
+        <a href="#" class="language-option" data-lang="es">
+            <img src="https://flagcdn.com/w20/es.png" alt="Español"> Español
+        </a>
+        <a href="#" class="language-option" data-lang="de">
+            <img src="https://flagcdn.com/w20/de.png" alt="Deutsch"> Deutsch
+        </a>
+        <a href="#" class="language-option" data-lang="it">
+            <img src="https://flagcdn.com/w20/it.png" alt="Italiano"> Italiano
+        </a>
+    </div>
+</div> 

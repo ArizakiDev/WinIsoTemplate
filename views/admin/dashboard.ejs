@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Windows ISO Uploader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://img.icons8.com/color/48/000000/windows-10.png" alt="Windows Icon">
+                <h5 class="text-light">Windows ISO Uploader</h5>
+                <p class="small mb-0 text-muted">Administration</p>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/admin/dashboard">
+                        <i class="bi bi-speedometer2"></i> <span>Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/reports">
+                        <i class="bi bi-flag-fill"></i> <span>Signalements</span>
+                        <% if (reportCount > 0) { %>
+                            <span class="badge bg-danger float-end"><%= reportCount %></span>
+                        <% } %>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/isos">
+                        <i class="bi bi-hdd-fill"></i> <span>Tous les ISO</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-5">
+                    <a class="nav-link" href="/admin/logout">
+                        <i class="bi bi-box-arrow-right"></i> <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-light">Tableau de bord</h2>
+                <span class="text-muted">Connecté en tant que <%= admin %></span>
+            </div>
+            
+            <% if (typeof messages !== 'undefined' && messages.success) { %>
+                <div class="alert alert-success">
+                    <%= messages.success %>
+                </div>
+            <% } %>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <i class="bi bi-hdd-fill"></i>
+                    <h3><%= stats.totalIsos %></h3>
+                    <p>ISO téléchargés</p>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-download"></i>
+                    <h3><%= stats.totalDownloads %></h3>
+                    <p>Téléchargements</p>
+                </div>
+                <div class="stat-card reports">
+                    <i class="bi bi-flag-fill"></i>
+                    <h3><%= stats.totalReports %></h3>
+                    <p>Signalements</p>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-chat-left-text-fill"></i>
+                    <h3><%= stats.totalComments %></h3>
+                    <p>Commentaires</p>
+                </div>
+            </div>
+            
+            <h4 class="mb-3 text-light">Derniers ISO uploadés</h4>
+            
+            <% if (recentIsos.length === 0) { %>
+                <div class="alert alert-info">
+                    Aucun ISO n'a encore été téléchargé.
+                </div>
+            <% } else { %>
+                <% recentIsos.forEach(iso => { %>
+                    <div class="dashboard-card <%= iso.reported ? 'reported' : '' %> mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="text-light">
+                                    <%= iso.originalName %>
+                                    <% if (iso.reported) { %>
+                                        <span class="badge bg-warning">Signalé</span>
+                                    <% } %>
+                                </h5>
+                                <p class="mb-2"><%= iso.description %></p>
+                                <small class="text-muted">
+                                    Partagé par <strong><%= iso.username %></strong> 
+                                    le <%= new Date(iso.uploadDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %> 
+                                    | <%= (iso.fileSize / (1024 * 1024)).toFixed(2) %> MB
+                                </small>
+                            </div>
+                            <div>
+                                <a href="/iso/<%= iso._id %>" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                                <form action="/admin/delete/<%= iso._id %>" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet ISO ?')">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+                
+                <div class="text-center mt-3">
+                    <a href="/admin/isos" class="btn btn-primary">Voir tous les ISO</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

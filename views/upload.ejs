@@ -1,0 +1,155 @@
+<%- contentFor('body') %>
+
+<div class="upload-section mb-4">
+    <h2 class="mb-3">Uploader un ISO Windows personnalisé</h2>
+    <p class="lead text-light">Partagez votre ISO Windows avec la communauté. Assurez-vous qu'il est sécurisé et légal.</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="mb-3">
+                <label for="username" class="form-label fw-bold">Votre nom d'utilisateur</label>
+                <input type="text" class="form-control username-input" id="username" name="username" required>
+                <small class="form-text text-light opacity-75">Ce nom apparaîtra comme l'auteur de l'upload. Les liens ne sont pas autorisés.</small>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label fw-bold">Description de l'ISO</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                <small class="form-text text-light opacity-75">Décrivez les caractéristiques spéciales ou les modifications de votre ISO Windows.</small>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label fw-bold mb-3">Méthode de partage</label>
+                <div class="d-flex gap-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="upload_type" id="upload_file" value="file" checked>
+                        <label class="form-check-label" for="upload_file">
+                            <i class="bi bi-upload me-1"></i> Télécharger un fichier ISO
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="upload_type" id="upload_link" value="link">
+                        <label class="form-check-label" for="upload_link">
+                            <i class="bi bi-link-45deg me-1"></i> Fournir un lien externe
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="file_upload_section" class="mb-3">
+                <label for="iso" class="form-label fw-bold">Fichier ISO (max: 5GB)</label>
+                <input type="file" class="form-control" id="iso" name="iso" accept=".iso">
+                <small class="form-text text-light opacity-75">Seuls les fichiers .iso sont acceptés.</small>
+            </div>
+            
+            <div id="link_upload_section" class="mb-3" style="display: none;">
+                <label for="externalLink" class="form-label fw-bold">Lien de téléchargement externe</label>
+                <input type="url" class="form-control" id="externalLink" name="externalLink" placeholder="https://exemple.com/mon-iso.iso">
+                <small class="form-text text-light opacity-75">Fournissez un lien direct vers le fichier ISO.</small>
+            </div>
+            
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                        Je certifie que ce fichier est légal, exempt de malware, et que j'ai le droit de le partager.
+                    </label>
+                </div>
+            </div>
+            
+            <div class="progress upload-progress mb-3 d-none">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" aria-valuenow="0" aria-valuemin="0" 
+                     aria-valuemax="100" style="width: 0%"></div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-cloud-upload"></i> Uploader
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('uploadForm');
+        const progressBar = document.querySelector('.progress');
+        const progressBarInner = progressBar.querySelector('.progress-bar');
+        const fileSection = document.getElementById('file_upload_section');
+        const linkSection = document.getElementById('link_upload_section');
+        const fileInput = document.getElementById('iso');
+        const linkInput = document.getElementById('externalLink');
+        const uploadTypeRadios = document.querySelectorAll('input[name="upload_type"]');
+
+        // Gestion du changement de type d'upload
+        uploadTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'file') {
+                    fileSection.style.display = 'block';
+                    linkSection.style.display = 'none';
+                    fileInput.setAttribute('required', '');
+                    linkInput.removeAttribute('required');
+                    // Définir l'enctype pour le téléchargement de fichier
+                    form.setAttribute('enctype', 'multipart/form-data');
+                } else {
+                    fileSection.style.display = 'none';
+                    linkSection.style.display = 'block';
+                    fileInput.removeAttribute('required');
+                    linkInput.setAttribute('required', '');
+                    // Changer l'enctype pour les liens
+                    form.setAttribute('enctype', 'application/x-www-form-urlencoded');
+                }
+            });
+        });
+        
+        form.addEventListener('submit', function(e) {
+            const uploadType = document.querySelector('input[name="upload_type"]:checked').value;
+            
+            if (uploadType === 'file') {
+                if (fileInput.files.length > 0) {
+                    const fileSize = fileInput.files[0].size;
+                    const maxSize = 5 * 1024 * 1024 * 1024; // 5GB
+                    
+                    if (fileSize > maxSize) {
+                        e.preventDefault();
+                        alert('Le fichier est trop volumineux. Maximum autorisé: 5GB');
+                        return;
+                    }
+                    
+                    // S'assurer que l'enctype est correct
+                    form.setAttribute('enctype', 'multipart/form-data');
+                    
+                    // Afficher la barre de progression
+                    progressBar.classList.remove('d-none');
+                    
+                    // Simuler la progression
+                    let progress = 0;
+                    const interval = setInterval(function() {
+                        progress += Math.random() * 10;
+                        if (progress > 90) {
+                            clearInterval(interval);
+                            progress = 90; // Attend la réponse du serveur pour aller à 100%
+                        }
+                        progressBarInner.style.width = progress + '%';
+                        progressBarInner.setAttribute('aria-valuenow', progress);
+                    }, 500);
+                } else {
+                    e.preventDefault();
+                    alert('Veuillez sélectionner un fichier ISO à uploader');
+                }
+            } else if (uploadType === 'link') {
+                // S'assurer que l'enctype est correct
+                form.setAttribute('enctype', 'application/x-www-form-urlencoded');
+                
+                // Validation simple du lien (URL valide)
+                const linkValue = linkInput.value.trim();
+                if (!linkValue || !/^https?:\/\//.test(linkValue)) {
+                    e.preventDefault();
+                    alert('Veuillez fournir un lien valide commençant par http:// ou https://');
+                }
+            }
+        });
+    });
+</script> 

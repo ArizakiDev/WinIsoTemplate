@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Administrateur - Windows ISO Uploader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(67, 97, 238, 0.2);
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-50px) translateX(30px);
+            }
+            50% {
+                transform: translateY(-100px) translateX(-30px);
+            }
+            75% {
+                transform: translateY(-50px) translateX(50px);
+            }
+            100% {
+                transform: translateY(0) translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class="particles" id="particles">
+        <!-- Les particules seront ajoutées par JavaScript -->
+    </div>
+    
+    <div class="login-container">
+        <div class="login-logo">
+            <img src="https://img.icons8.com/color/48/000000/windows-10.png" alt="Windows Icon">
+            <h4 class="text-light">Windows ISO Uploader</h4>
+            <p class="text-muted">Administration</p>
+        </div>
+        
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <form action="/admin/login" method="POST">
+            <div class="mb-3">
+                <label for="username" class="form-label">Nom d'utilisateur</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <a href="/" class="text-decoration-none text-light">Retour à l'accueil</a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Ajouter des particules en fond
+        document.addEventListener('DOMContentLoaded', function() {
+            const particlesContainer = document.getElementById('particles');
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Taille aléatoire
+                const size = Math.random() * 80 + 30;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Position aléatoire
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+                
+                // Couleur aléatoire
+                const colors = ['rgba(67, 97, 238, 0.2)', 'rgba(58, 12, 163, 0.2)', 'rgba(247, 37, 133, 0.1)'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = color;
+                
+                // Animation avec délai aléatoire
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+                particle.style.animationDuration = `${Math.random() * 10 + 15}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Animation de focus sur les inputs
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+            
+            // Ajout d'un effet d'apparition au formulaire
+            const loginContainer = document.querySelector('.login-container');
+            loginContainer.style.opacity = "0";
+            loginContainer.style.transform = "translateY(30px)";
+            
+            setTimeout(() => {
+                loginContainer.style.transition = "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)";
+                loginContainer.style.opacity = "1";
+                loginContainer.style.transform = "translateY(0)";
+            }, 200);
+        });
+    </script>
+</body>
+</html> 

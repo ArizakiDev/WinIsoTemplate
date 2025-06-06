@@ -1,0 +1,27 @@
+<nav class="navbar navbar-dark">
+    <div class="navbar-brand">
+        <img src="https://img.icons8.com/color/48/000000/windows-10.png" alt="Windows Icon" width="30" height="30">
+        <span>Windows ISO Uploader</span>
+    </div>
+    
+    <ul class="navbar-nav flex-column w-100">
+        <li class="nav-item">
+            <a class="nav-link <%= path === '/' ? 'active' : '' %>" href="/">
+                <i class="bi bi-house-fill"></i> <span>Accueil</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <%= path === '/upload' ? 'active' : '' %>" href="/upload">
+                <i class="bi bi-upload"></i> <span>Uploader</span>
+            </a>
+        </li>
+    </ul>
+    
+    <ul class="navbar-nav flex-column mt-auto w-100">
+        <li class="nav-item">
+            <a class="nav-link <%= path === '/admin' ? 'active' : '' %>" href="/admin">
+                <i class="bi bi-shield-lock-fill"></i> <span>Admin</span>
+            </a>
+        </li>
+    </ul>
+</nav> 

@@ -1,0 +1,117 @@
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card iso-card mb-4">
+            <div class="card-body">
+                <h2 class="card-title"><%= iso.originalName %></h2>
+                <p class="card-text"><%= iso.description %></p>
+                <div class="mb-3">
+                    <small class="text-muted">
+                        Partagé par <strong><%= iso.username %></strong> 
+                        le <%= new Date(iso.uploadDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                    </small>
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-secondary">
+                        <%= (iso.fileSize / (1024 * 1024)).toFixed(2) %> MB
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="/download/<%= iso._id %>" class="btn btn-primary">Télécharger</a>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        Signaler cet ISO
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section commentaires -->
+        <div class="comment-section">
+            <h3>Commentaires (<%= comments.length %>)</h3>
+            
+            <form action="/comment/<%= iso._id %>" method="POST" class="mb-4">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Votre nom d'utilisateur</label>
+                    <input type="text" class="form-control username-input" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="content" class="form-label">Votre commentaire</label>
+                    <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter un commentaire</button>
+            </form>
+            
+            <% if (comments.length === 0) { %>
+                <div class="alert alert-info">
+                    Aucun commentaire pour le moment. Soyez le premier à commenter !
+                </div>
+            <% } else { %>
+                <% comments.forEach(comment => { %>
+                    <div class="comment">
+                        <div class="d-flex justify-content-between">
+                            <strong><%= comment.username %></strong>
+                            <small class="text-muted">
+                                <%= new Date(comment.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                            </small>
+                        </div>
+                        <p><%= comment.content %></p>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                Recommandations
+            </div>
+            <div class="card-body">
+                <% if (relatedIsos.length === 0) { %>
+                    <p>Aucun autre ISO disponible pour le moment.</p>
+                <% } else { %>
+                    <ul class="list-group list-group-flush">
+                        <% relatedIsos.forEach(relatedIso => { %>
+                            <li class="list-group-item">
+                                <a href="/iso/<%= relatedIso._id %>"><%= relatedIso.originalName %></a>
+                                <p class="small text-muted mb-0">
+                                    Par <%= relatedIso.username %>, 
+                                    <%= (relatedIso.fileSize / (1024 * 1024)).toFixed(2) %> MB
+                                </p>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour signaler -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Signaler cet ISO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/report/<%= iso._id %>" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="reportUsername" class="form-label">Votre nom d'utilisateur</label>
+                        <input type="text" class="form-control username-input" id="reportUsername" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Raison du signalement</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Signaler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 

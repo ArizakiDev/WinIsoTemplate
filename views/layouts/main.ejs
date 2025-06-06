@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows ISO Uploader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    
+    <div class="main-content">
+        <div class="container mt-4">
+            <% if (typeof messages !== 'undefined' && messages.error && messages.error.length > 0) { %>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            
+            <% if (typeof messages !== 'undefined' && messages.success && messages.success.length > 0) { %>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            
+            <%- body %>
+        </div>
+        
+        <%- include('../partials/footer') %>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // Gestion des cookies pour sauvegarder le pseudo
+        function saveToCookie(key, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "; expires=" + date.toUTCString();
+            document.cookie = key + "=" + value + expires + "; path=/";
+        }
+        
+        function getCookie(key) {
+            const nameEQ = key + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return "";
+        }
+        
+        // Charger le pseudo depuis les cookies
+        window.onload = function() {
+            const usernameInputs = document.querySelectorAll('.username-input');
+            const savedUsername = getCookie('username');
+            
+            if (savedUsername && usernameInputs) {
+                usernameInputs.forEach(input => {
+                    input.value = savedUsername;
+                });
+            }
+            
+            // Enregistrer le pseudo quand il est saisi
+            usernameInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    saveToCookie('username', this.value, 30);
+                });
+            });
+            
+            // Traduction automatique
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Retirer la classe active de toutes les options
+                    document.querySelectorAll('.language-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    
+                    // Ajouter la classe active à l'option cliquée
+                    this.classList.add('active');
+                    
+                    // Afficher une notification de changement de langue
+                    const notif = document.createElement('div');
+                    notif.className = 'notification-bar success';
+                    notif.textContent = 'Langue changée avec succès !';
+                    document.body.prepend(notif);
+                    
+                    // Supprimer la notification après 3 secondes
+                    setTimeout(() => {
+                        notif.style.height = '0';
+                        notif.style.opacity = '0';
+                        setTimeout(() => notif.remove(), 300);
+                    }, 3000);
+                });
+            });
+            
+            // Fermer les barres de notification après 5 secondes
+            document.querySelectorAll('.notification-bar').forEach(bar => {
+                setTimeout(() => {
+                    bar.style.height = '0';
+                    bar.style.opacity = '0';
+                    setTimeout(() => bar.remove(), 300);
+                }, 5000);
+            });
+        };
+    </script>
+</body>
+</html> 

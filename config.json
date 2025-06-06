@@ -1,0 +1,13 @@
+{
+    "port": 3000,
+    "mongoURI": "",
+    "admin": {
+      "username": "admin",
+      "password": "adminpass123"
+    },
+    "uploadDir": "uploads",
+    "maxFileSize": 5368709120,
+    "allowedExtensions": [".iso"],
+    "cookieSecret": "windowsIsoUploaderSecret2024"
+  }
+  
