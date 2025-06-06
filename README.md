@@ -20,8 +20,8 @@ Une application web pour partager des ISO Windows personnalisés, construite ave
 
 1. Clonez ce dépôt :
    ```
-   git clone <url-du-repo>
-   cd windows-iso-uploader
+   git clone https://github.com/ArizakiDev/WinIsoTemplate
+   cd WinIsoTemplate
    ```
 
 2. Installez les dépendances :
@@ -82,10 +82,6 @@ Modifiez le fichier `config.json` pour configurer l'application :
 - Filtrage des noms d'utilisateur pour éviter les liens
 - Validation des fichiers (uniquement .iso)
 - Limite de taille de fichier (5GB par défaut)
-
-## Captures d'écran
-
-*à ajouter*
 
 ## Licence
 
